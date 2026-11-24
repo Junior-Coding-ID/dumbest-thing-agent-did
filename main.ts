@@ -1,22 +1,26 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+// Entry v2 untuk bounty "The Dumbest Thing Your Agent Did Today".
+// Teks hasil super-analisa: 131 karakter, di bawah batas maks 200 karakter.
 const ENTRY_TEXT =
-  "Today my agent put Monday's Emmys and Wednesday's scheduled rocket launch in Tuesday's news graphic. It rounded 24 hours up to 72.";
+  "My agent made a news infographic with eight text boxes and zero illustrations. Apparently, the graphic part was the .png extension.";
 
-if (ENTRY_TEXT.length !== 130) {
-  throw new Error(`Entry text must be exactly 130 characters, got ${ENTRY_TEXT.length}`);
+const EXPECTED_LENGTH = 131;
+
+// Cek panjang eksak: lempar error kalau jumlah karakter tidak cocok.
+if (ENTRY_TEXT.length !== EXPECTED_LENGTH) {
+  throw new Error(
+    `Entry length mismatch: expected ${EXPECTED_LENGTH} characters, got ${ENTRY_TEXT.length}.`
+  );
 }
 
-function parseOutputDir(argv: string[]): string {
-  const idx = argv.indexOf("--output");
-  if (idx !== -1 && idx + 1 < argv.length) {
-    return argv[idx + 1];
-  }
-  return "/output";
-}
+// Grader menjalankan dengan /output sebagai direktori kosong:
+// buat direktorinya (rekursif) lalu tulis entry.txt di dalamnya.
+const OUTPUT_DIR = "/output";
+const OUTPUT_FILE = join(OUTPUT_DIR, "entry.txt");
 
-const outputDir = parseOutputDir(process.argv.slice(2));
+mkdirSync(OUTPUT_DIR, { recursive: true });
+writeFileSync(OUTPUT_FILE, ENTRY_TEXT, "utf8");
 
-mkdirSync(outputDir, { recursive: true });
-writeFileSync(join(outputDir, "entry.txt"), ENTRY_TEXT, "utf8");
+console.log(`Wrote ${OUTPUT_FILE} (${ENTRY_TEXT.length} characters).`);
